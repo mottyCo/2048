@@ -101,6 +101,7 @@ body{
     align-items: center;
     font-size: 14px;
 }
+#background-of_board,
 .board{
     grid-row: 4/5;
     grid-column: 1/5;
@@ -116,6 +117,7 @@ body{
     justify-items: center;
     align-items: center;
 }
+
 .game-over{
     grid-row: 4/5;
     grid-column: 1/5;
@@ -130,6 +132,7 @@ body{
     justify-items: center;
     font-size: 26px;
     display:none;
+    z-index: 5;
 }
 .win-game{
     grid-row: 4/5;
@@ -146,6 +149,7 @@ body{
     font-size: 26px;
     color: white;
     display:none;
+    z-index: 5;
 }
 .game-over h3,
 .win-game h3{
@@ -166,17 +170,28 @@ body{
     font-weight: 700;
     padding-top: 10px;
 }
+#background-of_board div,
 .board div{
     width: 57.5px;
     height: 57.5px;
     
 }
+.board div{
+    z-index: 2;
+}
+#background-of_board{
+    z-index: 0;
+}
+#background-of_board div{
+    z-index: 1;
+}
 .pop{
-    animation: popme 200ms; 
+    animation: popme 150ms; 
 }
 .popmeout{
-    animation: popmeout 200ms; 
+    animation: popmeout 150ms; 
 }
+#background-of_board >*,
 .board >*{
     background-color: var(--background-emoty-cell);
     border-radius: 3px;
@@ -290,80 +305,92 @@ body{
 
 }
 .moveup1{
-    animation: moveup1 100ms; 
+    animation: moveup1 150ms; 
+    z-index: 4;
 }
 .movedown1{
-    animation: movedown1 100ms; 
+    animation: movedown1 150ms; 
+    z-index: 4;
 }
 .moveright1{
-    animation: moveright1 100ms; 
+    animation: moveright1 150ms; 
+    z-index: 4;
 }
 .moveleft1{
-    animation: moveleft1 100ms; 
+    animation: moveleft1 150ms; 
+    z-index: 4;
 }
 .moveup2{
-    animation: moveup2 100ms; 
+    animation: moveup2 150ms; 
+    z-index: 4;
 }
 .movedown2{
-    animation: movedown2 100ms; 
+    animation: movedown2 150ms; 
+    z-index: 4;
 }
 .moveright2{
-    animation: moveright2 100ms; 
+    animation: moveright2 150ms; 
+    z-index: 4;
 }
 .moveleft2{
-    animation: moveleft2 100ms; 
+    animation: moveleft2 150ms; 
+    z-index: 4;
 }
 .moveup3{
-    animation: moveup3 100ms; 
+    animation: moveup3 150ms; 
+    z-index: 4;
 }
 .movedown3{
-    animation: movedown3 100ms; 
+    animation: movedown3 150ms; 
+    z-index: 4;
 }
 .moveright3{
-    animation: moveright3 100ms; 
+    animation: moveright3 150ms; 
+    z-index: 4;
 }
 .moveleft3{
-    animation: moveleft3 100ms; 
+    animation: moveleft3 150ms; 
+    z-index: 4;
 }
 @media screen and (min-width: 481px) {
     .moveup1{
-        animation: moveup1big 100ms; 
+        animation: moveup1big 150ms; 
     }
     .movedown1{
-        animation: movedown1big 100ms; 
+        animation: movedown1big 150ms; 
     }
     .moveright1{
-        animation: moveright1big 100ms; 
+        animation: moveright1big 150ms; 
     }
     .moveleft1{
-        animation: moveleft1big 100ms; 
+        animation: moveleft1big 150ms; 
     }
     .moveup2{
-        animation: moveup2big 100ms; 
+        animation: moveup2big 150ms; 
     }
     .movedown2{
-        animation: movedown2big 100ms; 
+        animation: movedown2big 150ms; 
     }
     .moveright2{
-        animation: moveright2big 100ms; 
+        animation: moveright2big 150ms; 
     }
     .moveleft2{
-        animation: moveleft2big 100ms; 
+        animation: moveleft2big 150ms; 
     }
     .moveup3{
-        animation: moveup3big 100ms; 
+        animation: moveup3big 150ms; 
     }
     .movedown3{
-        animation: movedown3big 100ms; 
+        animation: movedown3big 150ms; 
     }
     .moveright3{
-        animation: moveright3big 100ms; 
+        animation: moveright3big 150ms; 
     }
     .moveleft3{
-        animation: moveleft3big 100ms; 
+        animation: moveleft3big 150ms; 
     }
     .popmeout{
-        animation: popmeoutbig 200ms; ;
+        animation: popmeoutbig 150ms; ;
     }
     
     .container{
@@ -377,6 +404,7 @@ body{
     .game-info{
         max-width: 250px;
     }
+    #background-of_board,
     .board{
         width: 450px;
         height: 450px;
@@ -399,10 +427,12 @@ body{
         min-width: 120px;
         padding:12 20px;
     }
+    #background-of_board div,
     .board div{
         width: 97.5px;
         height: 97.5px;
     }
+    
     .board >*{
         font-size: 56px;
         font-weight: 800;
@@ -478,192 +508,240 @@ body{
 @keyframes moveright1{
     from{
         transform: translateX(0);
+        z-index: 3;
     }
     to{
         transform: translateX(68px);
+        z-index: 3;
     }
 }
 @keyframes moveright1big{
     from{
         transform: translateX(0);
+        z-index: 3;
     }
     to{
         transform: translateX(110px);
+        z-index: 3;
     }
 }
 @keyframes moveleft1{
     from{
         transform: translateX(0);
+        z-index: 3;
     }
     to{
         transform: translateX(-68px);
+        z-index: 3;
     }
 }
 @keyframes moveleft1big{
     from{
         transform: translateX(0);
+        z-index: 3;
     }
     to{
         transform: translateX(-110px);
+        z-index: 3;
     }
 }
 @keyframes moveup1{
     from{
         transform: translateY(0);
+        z-index: 3;
     }
     to{
         transform: translateY(-68px);
+        z-index: 3;
     }
 }
 @keyframes moveup1big{
     from{
         transform: translateY(0);
+        z-index: 3;
     }
     to{
         transform: translateY(-110px);
+        z-index: 3;
     }
 }
 @keyframes movedown1{
     from{
         transform: translateY(0);
+        z-index: 3;
     }
     to{
         transform: translateY(68px);
+        z-index: 3;
     }
 }
 @keyframes movedown1big{
     from{
         transform: translateY(0);
+        z-index: 3;
     }
     to{
         transform: translateY(110px);
+        z-index: 3;
     }
 }
 @keyframes moveright2{
     from{
         transform: translateX(0);
+        z-index: 3;
     }
     to{
         transform: translateX(135px);
+        z-index: 3;
     }
 }
 @keyframes moveright2big{
     from{
         transform: translateX(0);
+        z-index: 3;
     }
     to{
         transform: translateX(220px);
+        z-index: 3;
     }
 }
 @keyframes moveleft2{
     from{
         transform: translateX(0);
+        z-index: 3;
     }
     to{
         transform: translateX(-135px);
+        z-index: 3;
     }
 }
 @keyframes moveleft2big{
     from{
         transform: translateX(0);
+        z-index: 3;
     }
     to{
         transform: translateX(-220px);
+        z-index: 3;
     }
 }
 @keyframes moveup2{
     from{
         transform: translateY(0);
+        z-index: 3;
     }
     to{
         transform: translateY(-135px);
+        z-index: 3;
     }
 }
 @keyframes moveup2big{
     from{
         transform: translateY(0);
+        z-index: 3;
     }
     to{
         transform: translateY(-220px);
+        z-index: 3;
     }
 }
 @keyframes movedown2{
     from{
         transform: translateY(0);
+        z-index: 3;
     }
     to{
         transform: translateY(135px);
+        z-index: 3;
     }
 }
 @keyframes movedown2big{
     from{
         transform: translateY(0);
+        z-index: 3;
     }
     to{
         transform: translateY(220px);
+        z-index: 3;
     }
 }
 @keyframes moveright3{
     from{
         transform: translateX(0);
+        z-index: 3;
     }
     to{
         transform: translateX(204px);
+        z-index: 3;
     }
 }
 @keyframes moveright3big{
     from{
         transform: translateX(0);
+        z-index: 3;
     }
     to{
         transform: translateX(330px);
+        z-index: 3;
     }
 }
 @keyframes moveleft3{
     from{
         transform: translateX(0);
+        z-index: 3;
     }
     to{
         transform: translateX(-204px);
+        z-index: 3;
     }
 }
 @keyframes moveleft3big{
     from{
         transform: translateX(0);
+        z-index: 3;
     }
     to{
         transform: translateX(-330px);
+        z-index: 3;
     }
 }
 @keyframes moveup3{
     from{
         transform: translateY(0);
+        z-index: 3;
     }
     to{
         transform: translateY(-204px);
+        z-index: 3;
     }
 }
 @keyframes moveup3big{
     from{
         transform: translateY(0);
+        z-index: 3;
     }
     to{
         transform: translateY(-330px);
+        z-index: 3;
     }
 }
 @keyframes movedown3{
     from{
         transform: translateY(0);
+        z-index: 3;
     }
     to{
         transform: translateY(204px);
+        z-index: 3;
     }
 }
 @keyframes movedown3big{
     from{
         transform: translateY(0);
+        z-index: 3;
     }
     to{
         transform: translateY(330px);
+        z-index: 3;
     }
 }

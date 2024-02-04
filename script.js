@@ -17,8 +17,8 @@ function play(){
         const all_the_cells = document.getElementById('board').children;
         for(let i =0 ; i<16 ; i++)
             all_the_cells[i].className = '';
-        addNumberInRandomLocation()
-        addNumberInRandomLocation()
+        addNumberInRandomLocation();
+        addNumberInRandomLocation();
     }
     let cellToPop =[];
     let cellTomove =[];
@@ -36,7 +36,7 @@ function play(){
                     addNumberInRandomLocation();
                     endGameIfNeedTo();
                     addScore();
-                },100);
+                },130);
             }
         }else if(!isGameOver && event.keyCode === 40){
             setarrays('down');
@@ -47,7 +47,7 @@ function play(){
                     addNumberInRandomLocation();
                     endGameIfNeedTo();
                     addScore();
-                },100);
+                },130);
             }
         }else if(!isGameOver && event.keyCode === 39){
             setarrays('right');
@@ -58,7 +58,7 @@ function play(){
                     addNumberInRandomLocation();
                     endGameIfNeedTo();
                     addScore();
-                },100);
+                },130);
             }
         }else if(!isGameOver && event.keyCode === 37){
             setarrays('left');
@@ -69,7 +69,7 @@ function play(){
                     addNumberInRandomLocation();
                     endGameIfNeedTo();
                     addScore();
-                },100);
+                },130);
             }
         }
     });
@@ -95,6 +95,7 @@ function play(){
             setTimeout(()=>{document.getElementById("win-game").style.display = "grid";},1000);
         }
         else if(playerLose()){
+            console.log('here');
             isGameOver = true;
             setTimeout(()=>{document.getElementById("game-over").style.display = "grid";},1000);
         }
