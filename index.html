@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.cdnfonts.com/css/clear-sans" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 game</title>
+</head>
+<body onload="play()">
+    <section class="container">
+        <div class="title">
+            <h2>2048</h2>
+        </div>
+        <div class="information-boxes">
+            <div class="informatio-box score">
+                <h6>SCORE</h6>
+                <p id="score">0</p>
+                <p id="this-turn-score"></p>
+            </div>
+            <div class="informatio-box best">
+                <h6>BEST</h6>
+                <p id="bestscore">0</p>
+            </div>
+        </div>
+        <div class="game-info">
+            <p><b>Play 2048 Game Online</b></p>
+            <p>join the numbers and get to the <b>2028 tile!</b></p>
+        </div>
+        <div class="new_game_button" onclick="reloadThePage()">New Game</div>
+        <div class="board" id="board">
+            <div id="test"></div>
+            <div></div>
+            <div></div>
+            <div></div>
+
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="game-over" id="game-over">
+            <h3>Game over!</h3>
+            <div>
+                <div class="game-over-btn try-again" onclick="reloadThePage()">Try again</div>
+                <div class="game-over-btn tweet">Tweet</div>
+            </div>
+        </div>
+        <div class="win-game" id="win-game">
+            <h3>You win!</h3>
+            <div>
+                <div class="game-over-btn try-again" onclick="reloadThePage()">play again</div>
+                <div class="game-over-btn tweet">Tweet</div>
+            </div>
+        </div>
+        <div class="how-to-play">
+            <p><b>HOW TO PLAY:</b> Use your <b>arrow keys </b>to move the tiles. When two tiles with the same numbers touch, they <b>merge into one!</b></p>
+        </div>
+    </section>
+</body>
+</html>
