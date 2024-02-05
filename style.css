@@ -101,7 +101,7 @@ body{
     align-items: center;
     font-size: 14px;
 }
-#background-of_board,
+#back_of_board,
 .board{
     grid-row: 4/5;
     grid-column: 1/5;
@@ -170,7 +170,7 @@ body{
     font-weight: 700;
     padding-top: 10px;
 }
-#background-of_board div,
+#back_of_board div,
 .board div{
     width: 57.5px;
     height: 57.5px;
@@ -179,19 +179,19 @@ body{
 .board div{
     z-index: 2;
 }
-#background-of_board{
+#back_of_board{
     z-index: 0;
 }
-#background-of_board div{
+#back_of_board div{
     z-index: 1;
 }
-.pop{
+.expanding{
     animation: popme 150ms; 
 }
-.popmeout{
-    animation: popmeout 150ms; 
+.grow{
+    animation: grow 150ms; 
 }
-#background-of_board >*,
+#back_of_board >*,
 .board >*{
     background-color: var(--background-emoty-cell);
     border-radius: 3px;
@@ -295,10 +295,10 @@ body{
     color: rgb(0,0,0,1);
     animation: upscore 1000ms;
 }
-.cell256.popmeout,
-.cell512.popmeout,
-.cell1024.popmeout,
-.cell2048.popmeout{
+.cell256.grow,
+.cell512.grow,
+.cell1024.grow,
+.cell2048.grow{
     box-shadow: -1px 1px 58px 8px rgba(237,191,58,1);
     -webkit-box-shadow: -1px 1px 58px 8px rgba(237,191,58,1);
     -moz-box-shadow: -1px 1px 58px 8px rgba(237,191,58,1);
@@ -389,8 +389,8 @@ body{
     .moveleft3{
         animation: moveleft3big 150ms; 
     }
-    .popmeout{
-        animation: popmeoutbig 150ms; ;
+    .grow{
+        animation: growbig 150ms; ;
     }
     
     .container{
@@ -404,7 +404,7 @@ body{
     .game-info{
         max-width: 250px;
     }
-    #background-of_board,
+    #back_of_board,
     .board{
         width: 450px;
         height: 450px;
@@ -427,7 +427,7 @@ body{
         min-width: 120px;
         padding:12 20px;
     }
-    #background-of_board div,
+    #back_of_board div,
     .board div{
         width: 97.5px;
         height: 97.5px;
@@ -483,7 +483,7 @@ body{
     to{max-height: 97.5px;
             max-width: 97.5px;}
 }
-@keyframes popmeout{
+@keyframes grow{
     from {height: 57.5px;
           width: 57.5px;
         }
@@ -491,7 +491,7 @@ body{
             width: 70px;
             } 
 }
-@keyframes popmeoutbig{
+@keyframes growbig{
     from {height: 97.5px;
           width: 97.5px;
         }

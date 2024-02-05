@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2048 game</title>
 </head>
-<body onload="play()">
+<body onload="initGame()">
     <section class="container">
         <div class="title">
             <h2>2048</h2>
@@ -28,7 +28,7 @@
             <p><b>Play 2048 Game Online</b></p>
             <p>join the numbers and get to the <b>2028 tile!</b></p>
         </div>
-        <div class="new_game_button" onclick="reloadThePage()">New Game</div>
+        <div class="new_game_button" onclick="reloadPage()">New Game</div>
         <div class="board" id="board">
             <div></div>
             <div></div>
@@ -47,7 +47,7 @@
             <div></div>
             <div></div>
         </div>
-        <div id="background-of_board">
+        <div id="back_of_board">
             <div></div>
             <div></div>
             <div></div>
@@ -68,14 +68,14 @@
         <div class="game-over" id="game-over">
             <h3>Game over!</h3>
             <div>
-                <div class="game-over-btn try-again" onclick="reloadThePage()">Try again</div>
+                <div class="game-over-btn try-again" onclick="reloadPage()">Try again</div>
                 <div class="game-over-btn tweet">Tweet</div>
             </div>
         </div>
         <div class="win-game" id="win-game">
             <h3>You win!</h3>
             <div>
-                <div class="game-over-btn try-again" onclick="reloadThePage()">play again</div>
+                <div class="game-over-btn try-again" onclick="reloadPage()">play again</div>
                 <div class="game-over-btn tweet">Tweet</div>
             </div>
         </div>

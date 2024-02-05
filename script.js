@@ -1,371 +1,323 @@
-let isGameOver = false;
-let score = 0;
-let bestScore = 0;
-if(localStorage.best)
-    bestScore = localStorage.best;
-else
-    localStorage.best = bestScore;
- 
-function play(){
-    document.getElementById("bestscore").innerHTML = localStorage.best;
-    if(isGameOver){
-        document.getElementById("game-over").style.display = "none";
-        isGameOver = false;
-    }
-    resetBoard();
-    function resetBoard(){
-        const all_the_cells = document.getElementById('board').children;
-        for(let i =0 ; i<16 ; i++)
-            all_the_cells[i].className = '';
-        addNumberInRandomLocation();
-        addNumberInRandomLocation();
-    }
-    let cellToPop =[];
-    let cellTomove =[];
+function reloadPage(){
+    location.reload();
+}
+function initGame(){
+    let growCells =[];
     let row1=[];
     let row2=[];
     let row3=[];
     let row4=[];
+    let gameOver = false;
+    let score = 0;
+    let bestScore = 0;
+    const Board = document.getElementById('board').children;
+    setBestScore();
+    printBestScore();
+    initBoard();
     document.addEventListener('keyup', (event)=>{
-        if(!isGameOver && event.keyCode === 38){
-            setarrays('up');
-            if(moveAllPieces(true , 'up')){
-                rotaterDirectionOfArrays('up');
-                setTimeout(()=>{
-                    setBoard();
-                    addNumberInRandomLocation();
-                    endGameIfNeedTo();
-                    addScore();
-                },130);
+        if(!gameOver){
+            let direction;
+            switch(event.keyCode){
+                case 38:
+                    direction = 'up';
+                    break;
+                case 40:
+                    direction = 'down';
+                    break;
+                case 39:
+                    direction = 'right';
+                    break;
+                case 37:
+                    direction = 'left';
+                    break;
             }
-        }else if(!isGameOver && event.keyCode === 40){
-            setarrays('down');
-            if(moveAllPieces(true , 'down')){
-                rotaterDirectionOfArrays('down');
+            copyRowsToArrays(direction);
+            if(piecesCanMove(true , direction)){
+                setRowsTOCorrectPosition(direction);
                 setTimeout(()=>{
-                    setBoard();
-                    addNumberInRandomLocation();
-                    endGameIfNeedTo();
-                    addScore();
-                },130);
-            }
-        }else if(!isGameOver && event.keyCode === 39){
-            setarrays('right');
-            if(moveAllPieces(true , 'right')){
-                rotaterDirectionOfArrays('right');
-                setTimeout(()=>{
-                    setBoard();
-                    addNumberInRandomLocation();
-                    endGameIfNeedTo();
-                    addScore();
-                },130);
-            }
-        }else if(!isGameOver && event.keyCode === 37){
-            setarrays('left');
-            if(moveAllPieces(true ,'left')){
-                rotaterDirectionOfArrays('left');
-                setTimeout(()=>{
-                    setBoard();
-                    addNumberInRandomLocation();
-                    endGameIfNeedTo();
+                    printBoard();
+                    addAnotherCell();
+                    if(pleyerWon()){
+                        gameOver = true;
+                        setTimeout(()=>{document.getElementById("win-game").style.display = "grid";},1000);
+                    }
+                    else if(playerLost()){
+                        gameOver = true;
+                        setTimeout(()=>{document.getElementById("game-over").style.display = "grid";},1000);
+                    } 
                     addScore();
                 },130);
             }
         }
     });
+    function initBoard(){
+        clearAllClasses();
+        addAnotherCell();
+        addAnotherCell();
+    }
+    function clearAllClasses(){
+        for(let i =0 ; i<16 ; i++)
+            Board[i].className = '';
+    }
+    function printBestScore(){
+        document.getElementById("bestscore").innerHTML = localStorage.best;
+    }
+    function setBestScore(){
+        if(localStorage.bestScore)
+            bestScore = localStorage.bestScore;  
+        else
+            localStorage.bestScore = bestScore;
+    }
     function addScore(){
-        let lastscore = document.getElementById("score").innerHTML;
-        document.getElementById("score").innerHTML = score;
-        lastscore = score - lastscore;
-        if(lastscore > 0)
-            document.getElementById("this-turn-score").innerHTML = '+' + lastscore;
-            document.getElementById("this-turn-score").classList.add("this-turn-score");
-        setTimeout(()=>{document.getElementById("this-turn-score").innerHTML = '';
-        document.getElementById("this-turn-score").classList.remove("this-turn-score");}, 2500)
+        scoreToAdd = getNewScore();
+        if(scoreToAdd > 0)
+            printNewScore(scoreToAdd);
         if(score > bestScore){
             bestScore = score;
-            document.getElementById("bestscore").innerHTML = bestScore;
-            localStorage.best = bestScore;
+            printBestScore();
+            localStorage.bestScore = bestScore;
         }
     }
-    function endGameIfNeedTo(){
-        const all_the_cells = document.getElementById('board').children;
-        if(pleyerWin()){
-            isGameOver = true;
-            setTimeout(()=>{document.getElementById("win-game").style.display = "grid";},1000);
-        }
-        else if(playerLose()){
-            console.log('here');
-            isGameOver = true;
-            setTimeout(()=>{document.getElementById("game-over").style.display = "grid";},1000);
-        }
-        function pleyerWin(){
-            for(let element of all_the_cells){
-                if(element.className === 'cell2048 popmeout')
-                    return true;
-            }
-        }
-        function playerLose(){
-            let boardFull = true;
-            for(let element of all_the_cells){
-                if(element.className === '' || element.className === 'cell0')
-                    boardFull = false;
-            }
-            if(boardFull){
-                let upCantMove = false;
-                let downCantMove = false;
-                let rightCantMove = false;
-                let leftCantMove = false;
-                setarrays('up');
-                if(!moveAllPieces(false , 'none'))
-                    upCantMove = true;
-                setarrays('down');
-                if(!moveAllPieces(false, 'none'))
-                    downCantMove = true;
-                setarrays('right');
-                if(!moveAllPieces(false, 'none'))
-                    rightCantMove = true;
-                setarrays('left');
-                if(!moveAllPieces(false, 'none'))
-                    leftCantMove = true;
-                if(upCantMove && downCantMove && rightCantMove && leftCantMove)
-                    return true;
-                return false;
-            }   
+    function printNewScore(scoreToAdd){
+        document.getElementById("this-turn-score").innerHTML = '+' + scoreToAdd;
+        document.getElementById("this-turn-score").classList.add("this-turn-score");
+        setTimeout(()=>{document.getElementById("this-turn-score").innerHTML = '';
+        document.getElementById("this-turn-score").classList.remove("this-turn-score");}, 2500)
+    }
+    function getNewScore(){
+        let lastscore = document.getElementById("score").innerHTML;
+        document.getElementById("score").innerHTML = score;
+        return score - lastscore;
+    }
+    function pleyerWon(){
+        for(let element of Board){
+            if(element.className === 'cell2048 grow')
+                return true;
         }
     }
-    function addNumberInRandomLocation(){
-        const all_the_cells = document.getElementById('board').children;
-        let stoper = false;
+    function playerLost(){
+        let boardFull = true;
+        for(let element of Board){
+            if(element.className === '' || element.className === 'cell0')
+                boardFull = false;
+        }
+        if(boardFull){
+            let upCantMove = false;
+            let downCantMove = false;
+            let rightCantMove = false;
+            let leftCantMove = false;
+            copyRowsToArrays('up');
+            if(!piecesCanMove(false , 'none'))
+                upCantMove = true;
+            copyRowsToArrays('down');
+            if(!piecesCanMove(false, 'none'))
+                downCantMove = true;
+            copyRowsToArrays('right');
+            if(!piecesCanMove(false, 'none'))
+                rightCantMove = true;
+            copyRowsToArrays('left');
+            if(!piecesCanMove(false, 'none'))
+                leftCantMove = true;
+            if(upCantMove && downCantMove && rightCantMove && leftCantMove)
+                return true;
+            return false;
+        }   
+    }
+    function addAnotherCell(){
+        let cellAdded = false;
         do{
-            const randomIndex = Math.floor(Math.random() * all_the_cells.length);
-            if(all_the_cells[randomIndex].className === "" || all_the_cells[randomIndex].className === "cell0"){
-                let randomNum = Math.floor(Math.random() * 6);
-                let numToAdd
-                if(randomNum < 5)
-                    numToAdd = 2;
+            const randomCellIndex = Math.floor(Math.random() * Board.length);
+            if(Board[randomCellIndex].className === "" || Board[randomCellIndex].className === "cell0"){
+                let randomNum1to10 = Math.floor(Math.random() * 10);
+                let NumberForNewCell;
+                if(randomNum1to10 < 9)
+                    NumberForNewCell = 2;
                 else
-                    numToAdd = 4;
+                    NumberForNewCell= 4;
 
-                all_the_cells[randomIndex].className = "cell" + numToAdd;
-                all_the_cells[randomIndex].classList.add("pop");
-                stoper = true;
+                Board[randomCellIndex].className = "cell" + NumberForNewCell;
+                Board[randomCellIndex].classList.add("expanding");
+                cellAdded = true;
             }
-        }while(!stoper)
+        }while(!cellAdded)
     }
-    function rotaterDirectionOfArrays(dir){
-        let entireRows = [row1,row2,row3,row4]
-        let newrow1=[];
-        let newrow2=[];
-        let newrow3=[];
-        let newrow4=[];
+    function setRowsTOCorrectPosition(dir){
+        let rows = [row1,row2,row3,row4]
+        let copyRows = [[],[],[],[]]
         switch(dir){
             case 'up':
-                for(let i = 0 ; i <4 ; i++){
-                    newrow1[i] = entireRows[i][0];
-                }
-                for(let i = 0 ; i <4 ; i++){
-                    newrow2[i] = entireRows[i][1];
-                }
-                for(let i = 0 ; i <4 ; i++){
-                    newrow3[i] = entireRows[i][2];
-                }
-                for(let i = 0 ; i <4 ; i++){
-                    newrow4[i] = entireRows[i][3];
-                }
+                for(let x = 0 ; x<4;x++)
+                    for(let i = 0 ; i <4 ; i++)
+                        copyRows[x][i] = rows[i][x];
                 break;
             case 'down':
-                for(let i = 0 ; i <4 ; i++){
-                    newrow1[i] = entireRows[i][3];
-                }
-                for(let i = 0 ; i <4 ; i++){
-                    newrow2[i] = entireRows[i][2];
-                }
-                for(let i = 0 ; i <4 ; i++){
-                    newrow3[i] = entireRows[i][1];
-                }
-                for(let i = 0 ; i <4 ; i++){
-                    newrow4[i] = entireRows[i][0];
-                }
+                for(let x = 0 , j=3 ; x<4; x++ , j--)
+                    for(let i = 0 ; i <4 ; i++)
+                        copyRows[x][i] = rows[i][j];
                 break;
             case 'right':
-                for(let i = 0, x=3 ; i <4 ; i++, x--){
-                    newrow1[i] = entireRows[0][x];
-                }
-                for(let i = 0, x=3 ; i <4 ; i++, x--){
-                    newrow2[i] = entireRows[1][x];
-                }
-                for(let i = 0, x=3 ; i <4 ; i++, x--){
-                    newrow3[i] = entireRows[2][x];
-                }
-                for(let i = 0, x=3 ; i <4 ; i++, x--){
-                    newrow4[i] = entireRows[3][x];
-                }
+                for(let j = 0; j<4;j++)
+                    for(let i = 0, x=3 ; i <4 ; i++, x--)
+                        copyRows[j][x] = rows[j][i];
                 break;
             case 'left':
-                newrow1 = row1;
-                newrow2 = row2;
-                newrow3 = row3;
-                newrow4 = row4; 
+                for(let x = 0 ; x<4;x++)
+                    for(let i = 0 ; i <4 ; i++)
+                        copyRows[x][i] = rows[x][i];
                 break;
         }
-        row1=newrow1;
-        row2=newrow2;
-        row3=newrow3;
-        row4=newrow4;
-        
+        row1=copyRows[0];
+        row2=copyRows[1];
+        row3=copyRows[2];
+        row4=copyRows[3];
     }
-    function setBoard(){
-        const all_the_cells = document.getElementById('board').children;
-        for(let i =0 ; i<16 ; i++){
-            all_the_cells[i].className = '';
-            if(i<4)
-                all_the_cells[i].classList.add('cell' + row1[i]);
-            else if(i>3 && i<8) 
-                all_the_cells[i].classList.add('cell' + row2[i-4]); 
-            else if(i>7 && i<12) 
-                all_the_cells[i].classList.add('cell' + row3[i-8]); 
-            else if(i>11) 
-                all_the_cells[i].classList.add('cell' + row4[i-12]);
+    function printBoard(){
+        clearAllClasses();
+        for(let cellNumber =0 ; cellNumber<16 ; cellNumber++){
+            if(cellNumber<4)//line1
+                Board[cellNumber].classList.add('cell' + row1[cellNumber]);
+            else if(cellNumber>3 && cellNumber<8) //line2
+                Board[cellNumber].classList.add('cell' + row2[cellNumber-4]); 
+            else if(cellNumber>7 && cellNumber<12) //line3
+                Board[cellNumber].classList.add('cell' + row3[cellNumber-8]); 
+            else if(cellNumber>11) //line4
+                Board[cellNumber].classList.add('cell' + row4[cellNumber-12]);
         }
-        for(let cell of cellToPop){
-            all_the_cells[cell].classList.add("popmeout");
-        }
-        cellToPop = [];
+        growCellsJustConnected();
     }
-    function moveAllPieces(addscore , dir){
-        let arr1 = movePieces(row1, addscore ,dir ,1);
-        let arr2 = movePieces(row2, addscore ,dir ,2);
-        let arr3 = movePieces(row3, addscore ,dir,3);
-        let arr4 = movePieces(row4, addscore ,dir, 4);
-        if(arr1 || arr2 || arr3 || arr4)
+    function growCellsJustConnected(){
+        for(let i = growCells.length-1;i>=0;i--){
+            Board[growCells[i]].classList.add("grow");
+        }
+        growCells = [];
+    }
+    function piecesCanMove(moveAndAddScore , dir){
+        let row1canMove = movePiecesAndReturnSuccess(row1, moveAndAddScore ,dir ,1);
+        let row2canMove = movePiecesAndReturnSuccess(row2, moveAndAddScore ,dir ,2);
+        let row3canMove = movePiecesAndReturnSuccess(row3, moveAndAddScore ,dir, 3);
+        let row4canMove = movePiecesAndReturnSuccess(row4, moveAndAddScore ,dir, 4);
+        if(row1canMove || row2canMove || row3canMove || row4canMove)
             return true;
         return false;
     }
-    function setarrays(direction){
-        
-        const all_the_cells = document.getElementById('board').children;
-        let index = 0;
+    function copyRowsToArrays(direction){   
+        let cellNumber = 0;
         switch(direction){  
             case 'up':
-                for(let x = 0; x<4 ;x++)
-                    for(let i = 1; i<5 ; i++, index++)
-                        fillArrays(i,x)
+                for(let arrayPartNumber = 0; arrayPartNumber<4 ;arrayPartNumber++)
+                    for(let arrayRowNumber = 1; arrayRowNumber<5 ; arrayRowNumber++, cellNumber++)
+                        fillArrayPart(arrayRowNumber,arrayPartNumber,cellNumber)
                 break;
             case 'down':
-                for(let x = 3; x>=0 ;x--)
-                    for(let i = 1; i<5 ; i++, index++)
-                        fillArrays(i,x)
+                for(let arrayPartNumber = 3; arrayPartNumber>=0 ;arrayPartNumber--)
+                    for(let arrayRowNumber = 1; arrayRowNumber<5 ; arrayRowNumber++, cellNumber++)
+                       fillArrayPart(arrayRowNumber,arrayPartNumber,cellNumber)
                 break;
             case 'right':
                 
-                for(let i = 1; i<5 ;i++)
-                    for(let x = 3; x>=0 ; x--, index++)
-                        fillArrays(i,x)
+                for(let arrayRowNumber = 1; arrayRowNumber<5 ;arrayRowNumber++)
+                    for(let arrayPartNumber = 3; arrayPartNumber>=0 ; arrayPartNumber--, cellNumber++)
+                        fillArrayPart(arrayRowNumber,arrayPartNumber,cellNumber)
                 break;
             case 'left':
-                for(let i = 1; i<5 ;i++)
-                    for(let x = 0; x<4 ; x++, index++)
-                        fillArrays(i,x)
+                for(let arrayRowNumber = 1; arrayRowNumber<5 ;arrayRowNumber++)
+                    for(let arrayPartNumber = 0; arrayPartNumber<4 ; arrayPartNumber++, cellNumber++)
+                        fillArrayPart(arrayRowNumber,arrayPartNumber,cellNumber)
                 break;      
-        }
-        function fillArrays(i,x){
-            let number = all_the_cells[index].className !== ""?all_the_cells[index].className:0;
-            if(number !== 0)
-                number = number.slice(4);
-            number = parseInt(number);
-            switch(i){
-                case 1:
-                    row1[x] = number;
-                    break;
-                case 2:
-                    row2[x] = number;
-                    break; 
-                case 3:
-                    row3[x] = number;
-                    break;
-                case 4:
-                    row4[x] = number;
-                    break; 
-            }
-        }
-        
-        
-         
+        }    
     }
-    function movePieces(array, addscore,dir, indexOfArray){
-        let thereIsAnyChange = false;
-        let dontChangeMe1 = false;
-        let dontChangeMe2 = false;
-        if(moveIndexArr1()===1){
-            popNewNumber(1,false,1);
-        }
-        switch(moveIndexArr2()){
+    function fillArrayPart(arrayRowNumber,arrayPartNumber,cellNumber){
+        let ClassName = Board[cellNumber].className !== ""?Board[cellNumber].className:0;
+        if(ClassName !== 0)
+            ClassName = ClassName.slice(4);
+        ClassName = parseInt(ClassName);
+        switch(arrayRowNumber){
             case 1:
-                popNewNumber(2,false,1);
+                row1[arrayPartNumber] = ClassName;
                 break;
             case 2:
-                popNewNumber(2,false,2);
+                row2[arrayPartNumber] = ClassName;
+                break; 
+            case 3:
+                row3[arrayPartNumber] = ClassName;
                 break;
+            case 4:
+                row4[arrayPartNumber] = ClassName;
+                break; 
         }
-        switch(moveIndexArr3()){
+    }
+    function movePiecesAndReturnSuccess(row, moveAndAddScore,dir, rowNumber){
+        let thereIsChange = false;
+        let cell0cell1Connected = false;
+        let cell1cell2Connected = false;
+        if(howManyCells1canMove()===1){
+            animateThisCell(1,'move',dir,rowNumber,1);
+        }
+        switch(howManyCells2canMove()){
             case 1:
-                popNewNumber(3,false,1);
+                animateThisCell(2,'move',dir,rowNumber,1);
                 break;
             case 2:
-                popNewNumber(3,false,2);
+                animateThisCell(2,'move',dir,rowNumber,2);
+                break;
+        }
+        switch(howManyCells3canMove()){
+            case 1:
+                animateThisCell(3,'move',dir,rowNumber,1);
+                break;
+            case 2:
+                animateThisCell(3,'move',dir,rowNumber,2);
                 break;
             case 3:
-                popNewNumber(3,false,3);
+                animateThisCell(3,'move',dir,rowNumber,3);
                 break;
         }
-
-        return thereIsAnyChange;
-        function moveIndexArr1(){
-            if(array[0] === 0 && array[1] !== 0){
-                array[0] = array[1];
-                array[1] = 0;
-                thereIsAnyChange = true;
+        return thereIsChange;
+        function howManyCells1canMove(){
+            if(row[0] === 0 && row[1] !== 0){
+                row[0] = row[1];
+                row[1] = 0;
+                thereIsChange = true;
                 return 1;
-            }else if(array[1] !== 0 && array[0] === array[1]){
-                array[0] = array[0]*2;
-                popNewNumber(0, true);
-                array[1] = 0;
-                dontChangeMe1 = true;
-                thereIsAnyChange = true;
-                if(addscore)
-                    score += array[0];
+            }else if(row[1] !== 0 && row[0] === row[1]){
+                row[0] = row[0]*2;
+                animateThisCell(0, 'grow',dir,rowNumber);
+                row[1] = 0;
+                cell0cell1Connected = true;
+                thereIsChange = true;
+                if(moveAndAddScore)
+                    score += row[0];
                 return 1;
             }
         }
-        function moveIndexArr2(){
-            if(array[1] === 0 && array[2] !== 0){
-                array[1] = array[2];
-                array[2] = 0;
-                thereIsAnyChange = true;
-                if(!dontChangeMe1)
-                    if(moveIndexArr1() === 1)
+        function howManyCells2canMove(){
+            if(row[1] === 0 && row[2] !== 0){
+                row[1] = row[2];
+                row[2] = 0;
+                thereIsChange = true;
+                if(!cell0cell1Connected)
+                    if(howManyCells1canMove() === 1)
                         return 2;
                 return 1;
             }
-            else if(array[2] !== 0 && array[1] === array[2]){
-                array[1] = array[2]*2;
-                popNewNumber(1, true);
-                array[2] = 0;
-                dontChangeMe2 = true;
-                thereIsAnyChange = true;
-                if(addscore)
-                    score += array[1];
+            else if(row[2] !== 0 && row[1] === row[2]){
+                row[1] = row[2]*2;
+                animateThisCell(1, 'grow',dir,rowNumber);
+                row[2] = 0;
+                cell1cell2Connected = true;
+                thereIsChange = true;
+                if(moveAndAddScore)
+                    score += row[1];
                 return 1;
             }
         }
-        function moveIndexArr3(){
-            if(array[2] === 0 && array[3] !== 0){
-                array[2] = array[3];
-                array[3] = 0;
-                thereIsAnyChange = true;
-                if(!dontChangeMe2){
-                    switch (moveIndexArr2()) {
+        function howManyCells3canMove(){
+            if(row[2] === 0 && row[3] !== 0){
+                row[2] = row[3];
+                row[3] = 0;
+                thereIsChange = true;
+                if(!cell1cell2Connected){
+                    switch (howManyCells2canMove()) {
                         case 1:
                             return 2;
                             break;
@@ -377,287 +329,36 @@ function play(){
                     } 
                 }       
             }
-            else if(array[3] !== 0 && array[2] === array[3]){
-                array[2] = array[3]*2;
-                popNewNumber(2 ,true);
-                array[3] = 0;
-                thereIsAnyChange = true;
-                if(addscore)
-                    score += array[2];
+            else if(row[3] !== 0 && row[2] === row[3]){
+                row[2] = row[3]*2;
+                animateThisCell(2 ,'grow',dir,rowNumber);
+                row[3] = 0;
+                thereIsChange = true;
+                if(moveAndAddScore)
+                    score += row[2];
                 return 1;
             }
         }
-        function popNewNumber(cell,trueToPopFalseToMove,howManyCellsToMove){
-            const all_the_cells = document.getElementById('board').children;
-            const indexArrayAndIndexCell = "" + indexOfArray + cell;
-
-            switch(indexArrayAndIndexCell){
-                case '10':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(0):all_the_cells[0].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(12):all_the_cells[12].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(3):all_the_cells[3].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(0):all_the_cells[0].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '11':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(4):all_the_cells[4].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(8):all_the_cells[8].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(2):all_the_cells[2].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(1):all_the_cells[1].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '12':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(8):all_the_cells[8].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(4):all_the_cells[4].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(1):all_the_cells[1].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(2):all_the_cells[2].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '13':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(12):all_the_cells[12].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(0):all_the_cells[0].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(0):all_the_cells[0].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(3):all_the_cells[3].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '20':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(1):all_the_cells[1].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(13):all_the_cells[13].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(7):all_the_cells[7].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(4):all_the_cells[4].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '21':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(5):all_the_cells[5].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(9):all_the_cells[9].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(6):all_the_cells[6].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(5):all_the_cells[5].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '22':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(9):all_the_cells[9].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(5):all_the_cells[5].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(5):all_the_cells[5].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(6):all_the_cells[6].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '23':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(13):all_the_cells[13].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(1):all_the_cells[1].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(4):all_the_cells[4].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(7):all_the_cells[7].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '30':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(2):all_the_cells[2].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(14):all_the_cells[14].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(11):all_the_cells[11].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(8):all_the_cells[8].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '31':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(6):all_the_cells[6].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(10):all_the_cells[10].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(10):all_the_cells[10].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(9):all_the_cells[9].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '32':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(10):all_the_cells[10].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(6):all_the_cells[6].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(9):all_the_cells[9].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(10):all_the_cells[10].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '33':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(14):all_the_cells[14].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(2):all_the_cells[2].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(8):all_the_cells[8].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(11):all_the_cells[11].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '40':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(3):all_the_cells[3].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(15):all_the_cells[15].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(15):all_the_cells[15].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(12):all_the_cells[12].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '41':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(7):all_the_cells[7].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(11):all_the_cells[11].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(14):all_the_cells[14].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(13):all_the_cells[13].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '42':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(11):all_the_cells[11].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(7):all_the_cells[7].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(13):all_the_cells[13].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(14):all_the_cells[14].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-                case '43':
-                    switch(dir){
-                        case 'up': 
-                            trueToPopFalseToMove?cellToPop.push(15):all_the_cells[15].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'down':
-                            trueToPopFalseToMove?cellToPop.push(3):all_the_cells[3].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'right':
-                            trueToPopFalseToMove?cellToPop.push(12):all_the_cells[12].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                        case 'left':
-                            trueToPopFalseToMove?cellToPop.push(15):all_the_cells[15].classList.add("move"+dir+howManyCellsToMove);
-                            break;
-                    }
-                    break;
-  
-            }
+    }
+    function animateThisCell(cell,whatAnimate,dir,rowNumber,howManyCellsToMove){
+        let numberOfCells;
+        const cells = ['10','11','12','13','20','21','22','23','30','31','32','33','40','41','42','43']
+        const indexArrayAndIndexCell = "" + rowNumber + cell;
+        switch(dir){
+            case 'up': 
+                numberOfCells = [0,4,8,12,1,5,9,13,2,6,10,14,3,7,11,15];
+                break;
+            case 'down':
+                numberOfCells =[12,8,4,0,13,9,5,1,14,10,6,2,15,11,7,3];
+                break;
+            case 'right':
+                numberOfCells =[3,2,1,0,7,6,5,4,11,10,9,8,15,14,13,12];
+                break;
+            case 'left':
+                numberOfCells =[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+                break;
         }
+        let index = cells.indexOf(indexArrayAndIndexCell);
+        whatAnimate === 'grow'?growCells.push(numberOfCells[index]):Board[numberOfCells[index]].classList.add("move"+dir+howManyCellsToMove);
     }
 }
-function reloadThePage(){
-    location.reload();
-}
-
-
-
-
-
